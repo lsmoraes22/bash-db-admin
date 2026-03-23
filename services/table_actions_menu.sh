@@ -15,7 +15,7 @@ function table_actions_menu() {
 
         case $ACTION in
             1) create_record "$TABLE" ;;
-            2) show_table_data "$TABLE" 10 0 ;;
+            2) show_table_data "$TABLE" 20 0 ;;
             3) show_columns "$TABLE" ;;
             4) delete_row "$TABLE" ;;
             5) break ;;

@@ -8,7 +8,7 @@ function show_table_data() {
     local SEPARATOR="${7:-|}"
 
     if ! is_number "$LIMIT" || ! is_number "$OFFSET"; then
-        dialog --msgbox "LIMIT e OFFSET devem ser números." 8 50
+        show_message "LIMIT e OFFSET devem ser números."
         return 1
     fi
 
@@ -24,18 +24,14 @@ function show_table_data() {
         local RAW_DATA
         RAW_DATA=$(execute_query "$QUERY" | sed '1d')
 
-        if [ -z "$RAW_DATA" ]; then
-            dialog --msgbox "Nenhum dado encontrado." 6 40
-            break
-        fi
-
         local MENU_ITEMS=()
-        local i=1
-
-        while IFS= read -r line; do
-            MENU_ITEMS+=("$i" "$line")
-            ((i++))
-        done <<< "$RAW_DATA"
+        if [ ! -z "$RAW_DATA" ]; then
+            local i=1
+            while IFS= read -r line; do
+                MENU_ITEMS+=("$i" "$line")
+                ((i++))
+            done <<< "$RAW_DATA"
+        fi
 
         # adiciona navegação como opções extras
         MENU_ITEMS+=("n" ">> Próxima página")
@@ -47,7 +43,7 @@ function show_table_data() {
             --title "Tabela: $TABLE | Offset: $OFFSET | Limit: $LIMIT" \
             --cancel-label "Voltar" \
             --menu "Selecione uma linha ou navegue:" \
-            20 120 15 \
+            30 200 15 \
             "${MENU_ITEMS[@]}" \
             3>&1 1>&2 2>&3)
 
