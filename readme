@@ -1,0 +1,140 @@
+# 🚀 Bash DB Manager (CLI)
+
+A terminal-based database manager built with **Bash + dialog**, enabling dynamic CRUD operations directly on MySQL databases.
+
+> 💡 Inspired by tools like phpMyAdmin and Adminer — but fully running in a text-based interface (TUI).
+
+---
+
+## Features
+
+* List database tables
+* Browse data with pagination (LIMIT/OFFSET)
+* Create records (dynamic INSERT)
+* Edit records (auto-generated UPDATE forms)
+* Delete records (with confirmation)
+* Support for filtering (`WHERE`) and sorting (`ORDER BY`)
+* Interactive terminal UI powered by `dialog`
+* Secure login (no credential storage)
+* Automatic column and primary key detection
+
+---
+
+## Preview
+
+> (Add a demo GIF using asciinema here 😉)
+
+---
+
+## Requirements
+
+* Bash 4+
+* MySQL or MariaDB
+* dialog
+
+Install dependencies:
+
+```bash
+sudo apt install dialog mysql-client
+```
+
+---
+
+## Getting Started
+
+```bash
+git clone https://github.com/your-username/bash-db-manager.git
+cd bash-db-manager
+chmod +x app.sh
+./app.sh
+```
+
+---
+
+## Authentication
+
+When starting the application, you will be prompted to enter:
+
+* Database host
+* Username
+* Database name
+* Password
+
+Credentials are **not stored anywhere** and are only used during the active session.
+
+---
+
+## Project Structure
+
+```
+.
+├── app.sh
+├── views/
+│   ├── ui.sh
+│   ├── forms.sh
+│   └── menu.sh
+├── controllers/
+│   └── tenant.sh
+├── services/
+│   ├── show_tables.sh
+│   └── db_actions.sh
+├── utils/
+│   ├── db.sh
+│   ├── string.sh
+│   └── logger.sh
+```
+
+---
+
+## 🧠 How It Works
+
+* SQL queries are dynamically generated using Bash
+* UI is rendered using `dialog`
+* Table data is converted into interactive menus
+* CRUD operations are built automatically based on table structure
+
+---
+
+## ⚠️ Security Notice
+
+This project executes SQL queries directly on your database.
+
+* Do not use in production without additional validation
+* Prefer using in local or development environments
+* Avoid connecting to critical or sensitive databases
+
+---
+
+## 📌 Roadmap
+
+* [ ] Column-based validation (int, varchar, etc.)
+* [ ] Direct row selection (no manual ID input)
+* [ ] Dynamic search and filtering UI
+* [ ] Dashboard-like interface
+* [ ] Multi-database support
+
+---
+
+## 🤝 Contributing
+
+Contributions are welcome!
+
+1. Fork the repository
+2. Create a branch (`feature/your-feature`)
+3. Commit your changes
+4. Open a Pull Request
+
+---
+
+## 📄 License
+
+MIT
+
+---
+
+## 👨‍💻 Author
+
+Lucas Moraes
+Backend developer focused on automation and logistics systems
+
+---
