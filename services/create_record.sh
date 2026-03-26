@@ -27,15 +27,15 @@ create_record() {
         local VAR_NAME="COL$i"
         local VALUE="${!VAR_NAME}"
 
-        VALUE=$(escape_value "$VALUE")
-
         VALUES_ARRAY+=("$VALUE")
         ((i++))
     done
 
-    # junta valores
-    local VALUES_JOINED
-    VALUES_JOINED=$(IFS=,; echo "${VALUES_ARRAY[*]}")
+    local COLUMNS_JOINED
+    COLUMNS_JOINED=$(IFS="$SQL_LIST_SEPARATOR"; echo "${COL_ARRAY[*]}")
 
-    insert_db "$TABLE" "$COLUMNS" "$VALUES_JOINED"
+    local VALUES_JOINED
+    VALUES_JOINED=$(IFS="$SQL_LIST_SEPARATOR"; echo "${VALUES_ARRAY[*]}")
+
+    insert_db "$TABLE" "$COLUMNS_JOINED" "$VALUES_JOINED"
 }

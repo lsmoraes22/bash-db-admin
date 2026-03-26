@@ -32,10 +32,10 @@ edit_row() {
     for col in "${COL_ARRAY[@]}"; do
         local VAR="COL$i"
         local VALUE="${!VAR}"
+        local SAFE_COL
+        SAFE_COL=$(sql_quote_identifier "$col") || return 1
 
-        VALUE=$(escape_value "$VALUE")
-
-        SETS+=("\`$col\`='$VALUE'")
+        SETS+=("$SAFE_COL=$(sql_quote_value "$VALUE")")
         ((i++))
     done
 
@@ -44,10 +44,31 @@ edit_row() {
 
     local PK
     PK=$(search_primary_key_db "$TABLE")
+    [ -z "$PK" ] && {
+        dialog --msgbox "Chave primária não encontrada para a tabela $TABLE." 8 60
+        return 1
+    }
 
-    local PK_VALUE="${VAL_ARRAY[0]}"   # assume primeira coluna é PK
+    local PK_INDEX=-1
+    for i in "${!COL_ARRAY[@]}"; do
+        if [ "${COL_ARRAY[$i]}" = "$PK" ]; then
+            PK_INDEX=$i
+            break
+        fi
+    done
 
-    local QUERY="UPDATE \`$TABLE\` SET $SET_JOINED WHERE \`$PK\`='$PK_VALUE'"
+    if [ "$PK_INDEX" -lt 0 ]; then
+        dialog --msgbox "Não foi possível localizar a coluna da chave primária." 8 60
+        return 1
+    fi
+
+    local PK_VALUE="${VAL_ARRAY[$PK_INDEX]}"
+    local SAFE_TABLE
+    SAFE_TABLE=$(sql_quote_identifier "$TABLE") || return 1
+    local SAFE_PK
+    SAFE_PK=$(sql_quote_identifier "$PK") || return 1
+
+    local QUERY="UPDATE $SAFE_TABLE SET $SET_JOINED WHERE $SAFE_PK=$(sql_quote_value "$PK_VALUE")"
 
     execute_query "$QUERY"
 

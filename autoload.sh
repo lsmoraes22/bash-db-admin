@@ -19,6 +19,8 @@ source_files() {
 source_files "$BASE_DIR/utils"
 source_files "$BASE_DIR/services"
 source_files "$BASE_DIR/views"
+source_files "$BASE_DIR/templates"
+source_files "$BASE_DIR/macros"
 
 source "$BASE_DIR/do_login.sh"
 source "$BASE_DIR/routes.sh"

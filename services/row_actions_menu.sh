@@ -2,6 +2,7 @@ function row_actions_menu() {
     local TABLE=$1
     local ROW=$2
 
+    local ACTION
     ACTION=$(dialog --menu "Registro:\n$ROW" 15 60 4 \
         1 "Ver detalhes" \
         2 "Editar" \

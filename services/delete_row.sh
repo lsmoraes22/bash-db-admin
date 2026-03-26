@@ -1,25 +1,52 @@
 function delete_row() {
     local TABLE=$1
+    local ROW=$2
 
-    local ID=$(dialog --inputbox "Digite o ID para deletar:" 8 40 \
-        3>&1 1>&2 2>&3)
-
-    [ $? -ne 0 ] && return 1
-
-    dialog --yesno "Confirmar exclusão do ID $ID?" 8 40
-    [ $? -ne 0 ] && return 1
-
+    local col_id
     col_id=$(search_primary_key_db "$TABLE")
 
-    if [ $? -ne 0 ]; then
-        dialog --msgbox "Coluna 'id' não encontrada. Não é possível deletar." 8 50
+    if [ -z "$col_id" ]; then
+        dialog --msgbox "Chave primária não encontrada. Não é possível deletar." 8 60
         return 1
     fi
 
-    if ! is_number "$ID"; then
-        ID="'$ID'"
+    local ID=""
+    if [ -n "$ROW" ]; then
+        local COLUMNS
+        COLUMNS=$(show_columns_db "$TABLE" | awk 'NR>1 {print $1}')
+
+        mapfile -t COL_ARRAY <<< "$COLUMNS"
+        IFS=$'\t' read -ra VAL_ARRAY <<< "$ROW"
+
+        local pk_index=-1
+        local i
+        for i in "${!COL_ARRAY[@]}"; do
+            if [ "${COL_ARRAY[$i]}" = "$col_id" ]; then
+                pk_index=$i
+                break
+            fi
+        done
+
+        if [ "$pk_index" -lt 0 ]; then
+            dialog --msgbox "Não foi possível localizar a PK da linha selecionada." 8 60
+            return 1
+        fi
+
+        ID="${VAL_ARRAY[$pk_index]}"
+    else
+        ID=$(dialog --inputbox "Digite o valor da chave primária ($col_id):" 8 50 \
+            3>&1 1>&2 2>&3)
+
+        [ $? -ne 0 ] && return 1
     fi
-    delete_db "$TABLE" "\`$col_id\`=$ID"
+
+    dialog --yesno "Confirmar exclusão de $col_id = $ID?" 8 50
+    [ $? -ne 0 ] && return 1
+
+    local SAFE_COL
+    SAFE_COL=$(sql_quote_identifier "$col_id") || return 1
+
+    delete_db "$TABLE" "$SAFE_COL=$(sql_quote_value "$ID")"
 
     dialog --msgbox "Registro deletado!" 8 40
 }

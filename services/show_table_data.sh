@@ -14,7 +14,10 @@ function show_table_data() {
 
     while true; do
         # Monta query dinâmica
-        local QUERY="SELECT $COLUMNS FROM \`$TABLE\`"
+        local SAFE_TABLE
+        SAFE_TABLE=$(sql_quote_identifier "$TABLE") || return 1
+
+        local QUERY="SELECT $COLUMNS FROM $SAFE_TABLE"
 
         [ -n "$WHERE" ] && QUERY="$QUERY WHERE $WHERE"
         [ -n "$ORDER" ] && QUERY="$QUERY ORDER BY $ORDER"
